@@ -1,5 +1,7 @@
 # ReSpo.Vision Recruitment Task - Pitch Geometry
 
+Currently working at a teacher forcing strategy to the loss function.
+
 ## Installation
 
 My solution should be run in a docker container. To build the Docker image, run in the terminal:
