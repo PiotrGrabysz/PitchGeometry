@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
-from pitch_geo.constants import DATA_FOLDER
+from pitch_geo.constants import DATA_FOLDER, GRAPHS_FOLDER
 
 
 def visualize_keypoints(image_path: Union[Path, str], df: pd.DataFrame, dot_radius: float = 20.0):
@@ -99,15 +99,17 @@ def plot_image_with_annotations_on_ax(
             x, y, v = point
             if v > 0.1:
                 color = 'orange'
-            else:
-                color = 'teal'
-            circ = Circle(xy=(x, y), radius=dot_radius, color=color)
+                circ = Circle(xy=(x, y), radius=dot_radius, color=color)
+                ax.add_patch(circ)
+                ax.text(x=x + x_offset, y=y + y_offset, s=f'{labels[kid]}')
+            # else:
+            #     color = 'teal'
+
         else:
             x, y = point
             circ = Circle(xy=(x, y), radius=dot_radius)
-        ax.add_patch(circ)
-
-        ax.text(x=x + x_offset, y=y + y_offset, s=f'{labels[kid]}')
+            ax.add_patch(circ)
+            ax.text(x=x + x_offset, y=y + y_offset, s=f'{labels[kid]}')
 
 
 def show_field_with_keypoint_frequency(df, max_dot_size=1000):
@@ -151,7 +153,7 @@ def show_field_with_keypoint_frequency(df, max_dot_size=1000):
 
     fig, ax = plt.subplots(1, 2, figsize=(16, 16))
 
-    pitch_img = image.imread(DATA_FOLDER / 'pitch.png')
+    pitch_img = image.imread(GRAPHS_FOLDER / 'pitch.png')
     ax[0].imshow(pitch_img)
     ax[1].imshow(pitch_img)
 

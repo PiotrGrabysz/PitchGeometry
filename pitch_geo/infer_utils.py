@@ -32,11 +32,24 @@ def get_remaining_keypoints(img_path):
     return df_tmp
 
 
-def keypoints_to_df(keypoints, images_paths):
-    keypoints = keypoints.reshape(290, NUM_KEYPOINTS, 3).reshape(-1, 3)
+def keypoints_to_df(keypoints, images_paths, add_empty_keypoints=False):
+    """
+
+    Args:
+        keypoints:
+        images_paths:
+        add_empty_keypoints: I noticed that there are some keypoints in the data which are never visible. The model
+            does not predict them, but for the sake of consistency with the original it can add them to the final
+            frame, with x, y and vis equal to 0.
+
+    Returns:
+
+    """
+    keypoints = keypoints.reshape(len(images_paths), NUM_KEYPOINTS, 3).reshape(-1, 3)
+    # keypoints = keypoints.reshape(-1, 3)
 
     kid = pd.Series([label for _, label in LABELS.items()])
-    kid = pd.concat([kid for _ in range(290)], ignore_index=True)
+    kid = pd.concat([kid for _ in range(len(images_paths))], ignore_index=True)
 
     paths = pd.concat(
         [
@@ -50,22 +63,24 @@ def keypoints_to_df(keypoints, images_paths):
         'x': keypoints[:, 0],
         'y': keypoints[:, 1],
         'vis': keypoints[:, 2],
-        'dataset': 'test',
         'kid': kid,
+        'dataset': 'test',
         'image_path': paths
     })
 
     df = scale_xy(df)
     df = visibility(df)
 
-    remaining_keypoints = pd.concat(
-        (get_remaining_keypoints(img_path) for img_path in df['image_path'].unique()),
-        ignore_index=True
-    )
-    df = pd.concat([df, remaining_keypoints], ignore_index=True)
+    if add_empty_keypoints:
+        remaining_keypoints = pd.concat(
+            (get_remaining_keypoints(img_path) for img_path in df['image_path'].unique()),
+            ignore_index=True
+        )
+        df = pd.concat([df, remaining_keypoints], ignore_index=True)
+
     df = df.sort_values(by=['image_path', 'kid'])
 
-    df[df['vis'] == 0]['x'] = 0.0
-    df[df['vis'] == 0]['y'] = 0.0
+    df.loc[df['vis'] == 0, 'x'] = 0.0
+    df.loc[df['vis'] == 0, 'y'] = 0.0
 
     return df

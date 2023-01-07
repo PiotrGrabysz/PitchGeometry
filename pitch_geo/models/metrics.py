@@ -32,7 +32,8 @@ def not_visible(x: np.ndarray, threshold: float = 0.1) -> np.ndarray:
 
 
 def get_visible_from_array(y, threshold):
-    return y[:, :, :, 2::3] > threshold
+    # return y[:, :, :, 2::3] > threshold
+    return y[:, :, 2] > threshold
 
 
 class VisiblePrecision(tf.keras.metrics.Precision):

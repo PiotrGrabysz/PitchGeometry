@@ -32,5 +32,6 @@ def get_model(img_size: Union[int, Tuple], num_keypoints: int, dropout: Optional
     if dropout is not None:
         x = layers.Dropout(dropout)(x)
     outputs = layers.Conv2D(3 * num_keypoints, 2, 2, activation='sigmoid')(x)
+    outputs = layers.Reshape((num_keypoints, 3))(outputs)
 
     return tf.keras.Model(inputs, outputs, name="keypoint_detector")

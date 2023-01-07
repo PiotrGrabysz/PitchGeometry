@@ -106,9 +106,9 @@ class LogPredictedImages:
         return figure
 
     def predict(self):
-        keypoints_hat = self.model.predict(self.sample_images)
+        keypoints_hat = self.model.predict(self.sample_images).reshape(-1, 34 * 3)
         if self.batch_size <= self.n_images:
-            keypoints_hat = keypoints_hat[:self.n_images, :, :, :]
+            keypoints_hat = keypoints_hat[:self.n_images, :]
         return keypoints_hat
 
 

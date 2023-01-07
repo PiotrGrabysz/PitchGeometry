@@ -12,12 +12,19 @@ AUTOTUNE = tf.data.AUTOTUNE
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', '-m', help='Path to the saved model.')
     parser.add_argument(
-        '--input_dir', '-i', default='images/test',
-        help='Directory containing images for inference. This directory must be inside ./data/ folder.'
+        '--model',
+        '-m',
+        default='best_model',
+        help='Path to the saved model. Default to ./best_model/.'
     )
-    parser.add_argument('--batch', '-b', type=int, default=32, help='Batch size.')
+    parser.add_argument(
+        '--input_dir', '-i',
+        default='images/test',
+        help='Directory containing images for inference. This directory must be inside ./data/ folder. '
+             'The default value is images/test.'
+    )
+    parser.add_argument('--batch', '-b', type=int, default=32, help='Batch size. Default to 32.')
     parser.add_argument('--output_csv', '-o', type=Path, help='Filename of a csv file with keypoint annotations.')
     args = parser.parse_args()
     return args
@@ -43,7 +50,7 @@ def main():
     keypoints = model.predict(dataset)
 
     # Data Frame with keypoints annotations
-    df = infer_utils.keypoints_to_df(keypoints, images_paths)
+    df = infer_utils.keypoints_to_df(keypoints, images_paths, add_empty_keypoints=True)
 
     df.to_csv(args.output_csv, index=False)
     print(f'Keypoints saved in {args.output_csv}')
