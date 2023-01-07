@@ -1,43 +1,81 @@
+from abc import ABC, abstractmethod
+from typing import Sequence
+
 import cv2
 import numpy as np
 
 
-def random_translate(image, keypoints, limit=0.5, p=0.5):
-    if p > np.random.uniform(low=0, high=1):
-        # print(f'DEBUG: randomly translating')
-        x_percent, y_percent = np.random.uniform(low=-limit, high=limit, size=2)
-        return translate(image, keypoints, x_percent, y_percent)
-    return image, keypoints
+class Augmentation(ABC):
+    @abstractmethod
+    def aug_fn(self, image, keypoints):
+        pass
+
+
+class RandomTranslation(Augmentation):
+    def __init__(self, limit=0.5, p=0.5):
+        self.limit = limit
+        self.p = p
+
+    def __repr__(self):
+        return f'RandomTranslation(limit={self.limit}, p={self.p})'
+
+    def aug_fn(self, image, keypoints):
+        return self._random_translate(image, keypoints)
+
+    def _random_translate(self, image, keypoints):
+        if self.p > np.random.uniform(low=0, high=1):
+            x_percent, y_percent = np.random.uniform(low=-self.limit, high=self.limit, size=2)
+            return translate(image, keypoints, x_percent, y_percent)
+        return image, keypoints
+
+
+class RandomRotation(Augmentation):
+    def __init__(self, angle, scale, p=0.5):
+        self.angle = angle
+        self.scale = scale
+        self.p = p
+
+    def __repr__(self):
+        return f'RandomRotation(angle={self.angle}, scale={self.scale}, p={self.p})'
+
+    def aug_fn(self, image, keypoints):
+        return self._random_rotate(image, keypoints)
+
+    def _random_rotate(self, image, keypoints):
+        if self.p > np.random.uniform(low=0, high=1):
+            rand_angle = np.random.uniform(low=-self.angle, high=self.angle)
+            rand_scale = np.random.uniform(low=self.scale[0], high=self.scale[1])
+            return rotate(image, keypoints, rand_angle, rand_scale)
+        return image, keypoints
+
+
+class Sequential(Augmentation):
+    def __init__(self, augmentations: Sequence[Augmentation]):
+        self.augmentations = augmentations
+
+    def aug_fn(self, image, keypoints):
+        for aug in self.augmentations:
+            image, keypoints = aug.aug_fn(image, keypoints)
+        return image, keypoints
 
 
 def translate(image, keypoints, x_percent, y_percent):
     image_h, image_w = image.shape[:2]
 
-    # print(f'{image.shape=}')
-    # print(f'{keypoints.shape=}')
-    # print(f'{image=}')
-
     x = round(x_percent * image_w)
     y = round(y_percent * image_h)
-
-    # print(f'DEBUG: randomly translating by {x=} {y=}')
 
     T = np.float32([[1, 0, x], [0, 1, y]])
     img_translation = cv2.warpAffine(image, T, (image_w, image_h))
 
-    # mask = keypoints.sum(axis=-1) != 0
     mask = keypoints[:, 2] != 0
-    # print(f'DEBUG {mask=}')
 
     v_percent = np.array([x_percent, y_percent])
     keypoints[mask, :2] += v_percent
-    # print(f'DEBUG: {keypoints[mask, :2]=}')
-    # keypoints += v_percent
 
     # Check if after translation some kyepoint are out of the frame
     mask = np.logical_or((keypoints[:, :2] > np.ones(2)).any(axis=1), (keypoints[:, :2] < np.zeros(2)).any(axis=1))
     keypoints[mask] = np.array([0., 0., 0.])
-    # keypoints[mask] = v_percent'
     return img_translation, keypoints
 
 
@@ -46,7 +84,6 @@ def rotate(image, keypoints, angle, scale):
 
     mtx = cv2.getRotationMatrix2D((image_w // 2, image_h // 2), angle, scale=scale)
 
-    # T = np.float32([[1, 0, x], [0, 1, y]])
     img_translation = cv2.warpAffine(image, mtx, (image_w, image_h))
 
     mask = keypoints[:, 2] != 0
@@ -57,33 +94,7 @@ def rotate(image, keypoints, angle, scale):
 
     keypoints[mask, :2] = mtx2.dot(np.hstack([visible_kps, np.ones((len(visible_kps), 1))]).T).T
 
-    # keypoints += v_percent
-
     # Check if after translation some kyepoint are out of the frame
     mask = np.logical_or((keypoints[:, :2] > np.ones(2)).any(axis=1), (keypoints[:, :2] < np.zeros(2)).any(axis=1))
     keypoints[mask] = np.array([0., 0., 0.])
-    # keypoints[mask] = v_percent
-    # print(f'DEBUG: rotate done.')
-    # print(f'DEBUG: {img_translation.shape=}')
     return img_translation, keypoints
-
-
-def random_rotate(image, keypoints, angle, scale, p=0.5):
-    # print(f'DEBUG getting {image.shape=}')
-    if p > np.random.uniform(low=0, high=1):
-        rand_angle = np.random.uniform(low=-angle, high=angle)
-        # if scale == 1.0:
-        #     rand_scale = 1.0
-        # elif len(scale) == 2:
-        #     rand_scale = np.random.uniform(low=scale[0], high=scale[1])
-        # else:
-        #     raise ValueError('Argument scale has to be 1.0 or tuple of two floats.')
-        rand_scale = np.random.uniform(low=scale[0], high=scale[1])
-        return rotate(image, keypoints, rand_scale, rand_scale)
-    return image, keypoints
-
-
-def set_shapes(img, labels, img_shape, labels_shape):
-    img.set_shape(img_shape)
-    labels.set_shape(labels_shape)
-    return img, labels

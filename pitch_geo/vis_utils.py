@@ -64,7 +64,7 @@ def show_image_with_annotations(
 ):
 
     fig, ax = plt.subplots(1)
-    plot_image_with_annotations_on_ax(ax, img, keypoints, dot_radius, normalized, vis)
+    plot_image_with_annotations_on_ax(ax, img, keypoints, labels, dot_radius, normalized, vis)
     plt.axis('off')
     plt.show()
 
