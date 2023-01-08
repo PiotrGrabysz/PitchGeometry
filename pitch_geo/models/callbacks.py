@@ -84,12 +84,16 @@ class LogPredictedImages:
             self.sample_images = self.sample_images[:self.n_images, :, :, :]
 
     def __call__(self, epoch, logs):
-        keypoints = self.predict()
-        fig = self.image_grid(self.sample_images, keypoints)
+        fig = self.predict_and_plot()
         fig_to_save = plot_to_image(fig)
+        plt.close(fig)
         with self.file_writer.as_default():
             tf.summary.image("Sample images", fig_to_save, step=epoch)
-        plt.close(fig)
+
+    def predict_and_plot(self):
+        keypoints = self.predict()
+        fig = self.image_grid(self.sample_images, keypoints)
+        return fig
 
     def image_grid(self, images, keypoints):
         """Return a grid of images as a matplotlib figure."""
@@ -102,7 +106,6 @@ class LogPredictedImages:
             ax.set_xticklabels([])
             ax.set_yticklabels([])
         plt.tight_layout()
-        # plt.plot()
         return figure
 
     def predict(self):
