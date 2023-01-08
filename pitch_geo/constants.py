@@ -1,7 +1,7 @@
 from pathlib import Path
 
-DATA_FOLDER = Path('data')
-GRAPHS_FOLDER = Path('graphs/')
+DATA_FOLDER = Path('/workspace/data')
+GRAPHS_FOLDER = Path('/workspace/graphs/')
 KEYPOINTS_PATH = DATA_FOLDER / 'df_keypoints.csv'
 NUM_KEYPOINTS = 34
 LABELS = {

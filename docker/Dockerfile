@@ -35,3 +35,4 @@ RUN rm requirements.txt
 
 ENV TF_CPP_MIN_LOG_LEVEL=3
 ENV TF_FORCE_GPU_ALLOW_GROWTH=true
+ENV PYTHONPATH="/workspace"
