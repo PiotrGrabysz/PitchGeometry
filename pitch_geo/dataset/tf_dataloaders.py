@@ -7,7 +7,7 @@ import tensorflow as tf
 
 from pitch_geo.constants import DATA_FOLDER
 from pitch_geo.dataset.image_utils import load_image
-from pitch_geo.models.augmentation import Augmentation
+from pitch_geo.augmentation import Augmentation
 
 AUTOTUNE = tf.data.AUTOTUNE
 

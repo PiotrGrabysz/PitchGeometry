@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import tensorflow as tf
 
-from pitch_geo.models.metrics import get_visible_from_array
+from pitch_geo.models.metrics import is_visible_from_array
 from pitch_geo.vis_utils import plot_image_with_annotations_on_ax
 
 
@@ -19,7 +19,7 @@ class LogConfusionMatrixCallback:
         self.class_names = ['not_visible', 'visible']
         self.threshold = threshold
         self.visibility = np.concatenate([
-            tf.reshape(tensor=get_visible_from_array(kps, self.threshold), shape=[-1])
+            tf.reshape(tensor=is_visible_from_array(kps, self.threshold), shape=[-1])
             for _, kps in iter(self.dataset)
         ])
 
@@ -35,7 +35,7 @@ class LogConfusionMatrixCallback:
     def calculate_cm(self):
         # Use the model to predict the values from the test_images.
         test_pred_raw = self.model.predict(self.dataset)
-        test_pred = get_visible_from_array(test_pred_raw, threshold=self.threshold).reshape(-1)
+        test_pred = is_visible_from_array(test_pred_raw, threshold=self.threshold).reshape(-1)
 
         # Calculate the confusion matrix using sklearn.metrics
         cm = confusion_matrix(self.visibility, test_pred)
