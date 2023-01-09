@@ -113,9 +113,7 @@ tasks: predicting a keypoint's position and predicting its visibility.
 Every one of these two tasks, predicting position and predicting visibility should have a 
 different loss, and the model's objective would be to minimize a weighted sum of those losses:
 
-\begin{equation}
-TotalLoss = \lambda \cdot PositionLoss + (1 - \lambda) \cdot VisibilityLoss,
-\end{equation}
+$$ TotalLoss = \lambda \cdot PositionLoss + (1 - \lambda) \cdot VisibilityLoss $$
 
 What should be a function for each of those individual losses? I think that it is an easy choice for *VisibilityLoss*: 
 it is just a binary classification for each keypoint (*visible* vs *not visible*) 
