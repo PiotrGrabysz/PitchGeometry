@@ -1,4 +1,7 @@
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from functools import partial
+from pathlib import Path
 from typing import Union, Tuple, Sequence, Dict
 
 import numpy as np
@@ -6,13 +9,22 @@ import pandas as pd
 import tensorflow as tf
 
 from pitch_geo.constants import DATA_FOLDER
+from pitch_geo import data
 from pitch_geo.dataset.image_utils import load_image
 from pitch_geo.augmentation import Augmentation
 
 AUTOTUNE = tf.data.AUTOTUNE
 
 
-class DatasetBuilder:
+class DatasetBuilder(ABC):
+    """ Abstract class for building a Tensorflow dataset."""
+
+    @abstractmethod
+    def build(self):
+        pass
+
+
+class KeypointsDatasetBuilder(DatasetBuilder):
     """Class for building a Tensorflow dataset with images and keypoints. """
 
     shuffle_buffer_size = 100
@@ -32,7 +44,7 @@ class DatasetBuilder:
         self.augmentation = augmentation
 
     def build(self):
-        dataset = get_data_loader(df=self.data_frame, image_size=self.image_size)
+        dataset = data.get_data_loader(df=self.data_frame, image_size=self.image_size)
         if self.shuffle:
             dataset = dataset.shuffle(self.shuffle_buffer_size)
 
@@ -59,6 +71,21 @@ class DatasetBuilder:
     def _set_img_shape(img, keypoints, img_shape):
         img.set_shape(img_shape)
         return img, keypoints
+
+
+@dataclass
+class ImageDatasetBuilder(DatasetBuilder):
+    """" Class for building TF dataset with images. """
+
+    data_path: Union[str, Path]
+    image_size: int
+    batch_size: int
+
+    def build(self):
+        self.images_paths = sorted(str(x) for x in Path(self.data_path).glob('*.jpg'))
+        dataset = get_image_loader(self.images_paths, self.image_size)
+        dataset = dataset.batch(self.batch_size).prefetch(buffer_size=AUTOTUNE)
+        return dataset
 
 
 def get_data_loader(

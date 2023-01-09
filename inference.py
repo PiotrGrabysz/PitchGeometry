@@ -1,13 +1,9 @@
 import argparse
 from pathlib import Path
 
-import tensorflow as tf
-
-from pitch_geo.constants import DATA_FOLDER
-from pitch_geo.data import image_loader
 from pitch_geo import infer_utils
-
-AUTOTUNE = tf.data.AUTOTUNE
+from pitch_geo.dataset.tf_dataloaders import ImageDatasetBuilder
+from pitch_geo.models.models import load_saved_model
 
 
 def parse_args():
@@ -35,22 +31,19 @@ def main():
 
     # Read the model
 
-    model = tf.keras.models.load_model(args.model)
+    model = load_saved_model(args.model)
     model_input_shape = model.input_shape[1:3]
-    print(f'Loaded the model {args.model}.')
 
     # Get the data loader
 
-    data_path = DATA_FOLDER / args.input_dir
-    images_paths = sorted(str(x) for x in data_path.glob('*.jpg'))
-    dataset = image_loader(images_paths, model_input_shape, AUTOTUNE)
-    dataset = dataset.batch(args.batch).prefetch(buffer_size=AUTOTUNE)
+    dataset_builder = ImageDatasetBuilder(args.input_dir, image_size=model_input_shape, batch_size=args.batch)
+    dataset = dataset_builder.build()
 
     # Inference
     keypoints = model.predict(dataset)
 
     # Data Frame with keypoints annotations
-    df = infer_utils.keypoints_to_df(keypoints, images_paths, add_empty_keypoints=True)
+    df = infer_utils.keypoints_to_df(keypoints, dataset_builder.images_paths, should_add_ghost_keypoints=True)
 
     df.to_csv(args.output_csv, index=False)
     print(f'Keypoints saved in {args.output_csv}')

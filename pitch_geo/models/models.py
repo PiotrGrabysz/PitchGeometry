@@ -35,3 +35,9 @@ def get_model(img_size: Union[int, Tuple], num_keypoints: int, dropout: Optional
     outputs = layers.Reshape((num_keypoints, 3))(outputs)
 
     return tf.keras.Model(inputs, outputs, name="keypoint_detector")
+
+
+def load_saved_model(model_path: str):
+    model = tf.keras.models.load_model(model_path)
+    print(f'Loaded the model {model_path}.')
+    return model
