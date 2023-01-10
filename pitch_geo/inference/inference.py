@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 
-from pitch_geo import infer_utils
+from pitch_geo.inference import utils
 from pitch_geo.dataset.tf_dataloaders import ImageDatasetBuilder
 from pitch_geo.models.models import load_saved_model
 
@@ -43,7 +43,7 @@ def main():
     keypoints = model.predict(dataset)
 
     # Data Frame with keypoints annotations
-    df = infer_utils.keypoints_to_df(keypoints, dataset_builder.images_paths, should_add_ghost_keypoints=True)
+    df = utils.keypoints_to_df(keypoints, dataset_builder.images_paths, should_add_ghost_keypoints=True)
 
     df.to_csv(args.output_csv, index=False)
     print(f'Keypoints saved in {args.output_csv}')

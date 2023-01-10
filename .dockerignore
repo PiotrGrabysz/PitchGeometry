@@ -1,6 +1,12 @@
 **/*__pycache__
 *tar.gz
 *.ipynb
+*.csv
+best_model/
 checkpoints/
 data/
 logs/
+notebooks*
+outputs/
+predictions/
+tests/
