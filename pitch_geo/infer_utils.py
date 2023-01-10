@@ -1,3 +1,5 @@
+import itertools
+
 import pandas as pd
 
 from pitch_geo.constants import DATA_FOLDER, LABELS, NUM_KEYPOINTS
@@ -18,26 +20,40 @@ def keypoints_to_df(keypoints, images_paths, should_add_ghost_keypoints: bool = 
         df: a pandas DataFrame with a format defined in the task specification.
 
     """
-    keypoints = keypoints.reshape(len(images_paths), NUM_KEYPOINTS, 3).reshape(-1, 3)
+    number_of_images = len(images_paths)
 
-    kid = pd.Series([label for _, label in LABELS.items()])
-    kid = pd.concat([kid for _ in range(len(images_paths))], ignore_index=True)
+    # An array with x, y and vis
+    keypoints = keypoints.reshape(-1, 3)
 
-    paths = pd.concat(
-        [
-            pd.Series([strip_datafolder_name(p) for _ in range(NUM_KEYPOINTS)])
-            for p in images_paths
-        ],
-        ignore_index=True
+    unique_keypoint_ids = [label for _, label in LABELS.items()]
+    # kid_list = list(
+    #     itertools.chain.from_iterable(
+    #         itertools.repeat(unique_keypoint_ids, number_of_images)
+    #     )
+    # )
+    image_path_list = list(
+        itertools.chain.from_iterable(
+            itertools.repeat(strip_datafolder_name(image_path), NUM_KEYPOINTS) for image_path in images_paths
+        )
     )
+
+    # print(f'DEBUG: {keypoints.shape=}')
+    # print(f'DEBUG: {len(kid_list)=}')
+    # print(f'DEBUG: {kid_list=}')
+    # print(f'DEBUG: {len(image_path_list)=}')
 
     df = pd.DataFrame(data={
         'x': keypoints[:, 0],
         'y': keypoints[:, 1],
         'vis': keypoints[:, 2],
-        'kid': kid,
+        'kid': itertools.chain.from_iterable(
+            itertools.repeat(unique_keypoint_ids, number_of_images)
+        ),
         'dataset': 'test',
-        'image_path': paths
+        'image_path': itertools.chain.from_iterable(
+            itertools.repeat(strip_datafolder_name(image_path), NUM_KEYPOINTS)
+            for image_path in images_paths
+        )
     })
 
     df = rescale_xy(df)
