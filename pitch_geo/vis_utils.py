@@ -14,7 +14,7 @@ import numpy as np
 from pitch_geo.constants import DATA_FOLDER, GRAPHS_FOLDER
 
 
-def visualize_keypoints(image_path: Union[Path, str], df: pd.DataFrame, dot_radius: float = 20.0):
+def visualize_keypoints(image_path: Union[Path, str], df: pd.DataFrame, dot_radius: float = 20.0, images_base_path=DATA_FOLDER):
     """
     Plot the image from the given filepath and its corresponding keypoints.
     Args:
@@ -25,7 +25,8 @@ def visualize_keypoints(image_path: Union[Path, str], df: pd.DataFrame, dot_radi
     Returns:
 
     """
-    image_full_path = DATA_FOLDER / image_path
+    images_base_path = Path(images_base_path)
+    image_full_path = images_base_path / image_path
 
     img = image.imread(image_full_path)
     fig, ax = plt.subplots(1, figsize=(12, 6.75))  # 16:9 aspect ratio
