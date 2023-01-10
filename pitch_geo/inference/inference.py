@@ -10,8 +10,8 @@ from pitch_geo.models.models import load_saved_model
 
 def infer(
         model_name: Path = './best_model',
-        input_dir: Path = 'images/test',
-        output_csv: Path = 'outputs/output_keypoints.csv',
+        input_dir: Path = './data/images/test',
+        output_csv: Path = './outputs/output_keypoints.csv',
         batch: int = 32
 ):
     """
@@ -21,7 +21,7 @@ def infer(
 
         model_name: Path to a folder containing a saved_model.
 
-        input_dir: Directory containing images for inference. This directory must be inside ./data/ folder.
+        input_dir: Directory containing images for inference.
 
         output_csv: Path to a csv file the keypoints will be saved in.
 
