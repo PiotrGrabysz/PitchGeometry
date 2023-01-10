@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Optional, Union, Tuple
 
 import tensorflow as tf
@@ -37,7 +38,7 @@ def get_model(img_size: Union[int, Tuple], num_keypoints: int, dropout: Optional
     return tf.keras.Model(inputs, outputs, name="keypoint_detector")
 
 
-def load_saved_model(model_path: str):
+def load_saved_model(model_path: Union[str, Path]):
     model = tf.keras.models.load_model(model_path)
     print(f'Loaded the model {model_path}.')
     return model
