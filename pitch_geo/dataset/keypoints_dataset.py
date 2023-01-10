@@ -25,7 +25,8 @@ class KeypointDataset:
     """
 
     def __init__(
-            self, dataset: Literal['train', 'test'], keypoints_data_path: Path, images_base_dir: Path):
+            self, dataset: Literal['train', 'test'], keypoints_data_path: Path, images_base_dir: Path
+    ):
         self.dataset = dataset
         self._keypoints_data_path = keypoints_data_path
         self._images_base_dir = images_base_dir
