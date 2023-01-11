@@ -11,40 +11,88 @@ An example image and its annotated keypoints are shown below:
 **Keywords**: computer vision, deep neural network, custom loss function, data augmentation.
 ## Installation
 
-My solution should be run in a docker container. To build the Docker image, run in the terminal:
+My solution is containerized with Docker containers. There are containers for training, running inference and 
+visualizing keypoints on images. To build the Docker images, run in the terminal:
 ```shell
 $ docker/build.sh
 ```
 
-It pulls the image with `tensorflow 2.9.1` and installs additional dependencies.
+Images for training and inference use `tensorflow 2.9.1` as a base image.
 
-## Running the solution
+## Running the code
 
-The run the container, run:
+To open a jupyter lab session and start training a model, run:
+
 ```shell
-$ docker/run.sh
+$ runners/training_jupyter.sh
 ```
 
-The training pipeline is described in `Training.ipynb` and can be run in the notebook. To start a jupyter lab session, 
-run
-```shell
-$ jupyter-lab
-```
+The training pipeline is described in `Training.ipynb`.
 
-The inference pipeline can be run through a command
+The inference pipeline can be run with a command
 ```shell
-python3 inference.py --model MODEL --input_dir INPUT_DIR [--batch BATCH --output_csv OUTPUT_CSV
+./runners/infer.sh
+```
+<details>
+  <summary>Infer script usage</summary>
+
+```  
+Usage: inference.py [OPTIONS]
+
+  Run inference on images from a given folder.
+
+  Args:
+
+      model_name: Path to a folder containing a saved_model.
+
+      input_dir: Directory containing images for inference.
+
+      output_csv: Path to a csv file the keypoints will be saved in.
+
+      batch: Size a batch which the images are processed in.
+
+Options:
+  --model-name PATH  [default: ./best_model]
+  --input-dir PATH   [default: ./data/images/test]
+  --output-csv PATH  [default: ./outputs/output_keypoints.csv]
+  --batch INTEGER    [default: 32]
+  --help             Show this message and exit.
+```shell
+
+```
+</details>
+
+Once you have keypoints you can generate images with the keypoints plotted on them.
+Use `./runners/show_keypoints.sh` for this.
+<details>
+  <summary>show_keypoints script usage</summary>
+
+```
+Usage: show_keypoints.py [OPTIONS] KEYPOINTS_FILEPATH IMAGES_DIR OUTPUT_DIR
+
+  Plot keypoints on images.
+
+  Args:
+
+      keypoints_filepath: Filepath to the file containing a data frame with
+      keypoints.
+
+      images_dir: Folder containing images that keypoints file refers to.
+
+      output_dir: Folder where the processed images will be saved.
 
 Arguments:
---model MODEL, -m MODEL
-                        Path to the saved model.
---input_dir INPUT_DIR, -i INPUT_DIR
-                        Directory containing images for inference. This directory must be inside ./data/ folder.
---batch BATCH, -b BATCH
-                        Batch size.
---output_csv OUTPUT_CSV, -o OUTPUT_CSV                        
-                        Filename of a csv file with keypoint annotations.
+  KEYPOINTS_FILEPATH  [required]
+  IMAGES_DIR          [required]
+  OUTPUT_DIR          [required]
+
+Options:
+  --help  Show this message and exit.
 ```
+
+</details>
+
+
 
 ## Project description
 
@@ -131,5 +179,19 @@ MSE loss between them, and their corresponding predicted keypoints. This way the
 wrong coordinates of keypoints which are not visible and can learn those tasks completely separately. 
 
 A reader interested in the implementation of the loss can view it here:
-[pitch_geo/models/loss.py](pitch_geo/models/loss.py).
+[pitch_geo/models/loss.py](pitch_geo/models/loss.py). 
 
+## For developers
+
+There is one additional container, based on the training container, with some dev tools installed.
+Currently, it is `Black` for formatting and `pytest` for testing.
+
+You have to build the container with:
+```shell
+./docker/build_dev.sh
+```
+
+Then you can start the container with:
+```shell
+./runners/dev_tools.sh
+```
