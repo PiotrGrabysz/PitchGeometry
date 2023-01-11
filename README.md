@@ -92,14 +92,17 @@ Options:
 
 </details>
 
-
-
 ## Project description
 
 This project started as my recruitment task. 
 I have got a kind permission from the recruiter to show this project at my personal GitHub account.
-I am only sharing my code, thoughts and findings. I am not sharing the data, apart from a few examples which I use to 
-visualize the results.
+I am only sharing my code, thoughts and findings. I am not sharing the data, apart from a few examples which are used
+to visualize the results.
+
+I wanted to add this project to my portfolio, because it is different from typical object classification / detection
+and forced me to implement custom loss function, custom data augmentation. 
+I also created some Tensorboard callbacks for better monitoring of training.
+I just think it is a lot of cool stuff!
 
 ### About the dataset
 
@@ -181,10 +184,68 @@ wrong coordinates of keypoints which are not visible and can learn those tasks c
 A reader interested in the implementation of the loss can view it here:
 [pitch_geo/models/loss.py](pitch_geo/models/loss.py). 
 
+#### Data augmentation
+
+The data set is not very big (3822 images). In such cases it is most often beneficiary to use data augmentation, 
+which is a technique where new data points are artificially created by distorting the data.
+Because my data consists not only of images, but also keypoints, I didn't use default tensorflow augmentation,
+but I built my own data augmentation. Until now, I've implemented random translation and random rotation, and scaling.
+
+If a keypoint is moved out of the image range due to the transformation, its visibility as well as *xy* coordinates are
+zeroed out.
+
+#### Model's architecture
+
+The model is trained with a transfer learning technique. As a backbone I used an
+[`efficient net b1`](https://keras.io/api/applications/efficientnet/#efficientnetb1-function) model.
+I chose this model because I think that it delivers good accuracy with reasonable speed.
+
+The backbone's weights are frozen during the entire training (they are not treated as trainable parameters).
+I might add fine-tuning of some of the backbone's layers in the future.
+
+The backbone network is followed by a few convolutional layers - there is no dense layer.
+For one image the network's output is a tensor of shape `(number_of_keypoints, 3)`.
+The *xy* coordinates as well as visibility are all normalized to lie between 0 and 1.
+
+[comment]: <> (Add the network's graph visualization)
+
+#### Metrics
+
+I used several metrics for tracking my model's performance.
+For tracking visibility classification I measured precision and recall.
+For tracking coordinates regression I measured MSE loss.
+
+I've also logged to tensorboard a confusion matrix, and a batch of sample predictions after each epoch.
+The confusion matrix shows visible vs invisible classification.
+
+<details>
+  <summary>Click me to see a sample view of my Tensorboard dashboard</summary>
+
+  ![](docs/sample_tensorboard.png)
+</details>
+
+### Current results
+
+My current model achieves 0.00222MSE loss on visible keypoints.
+
+Below there are some examples of predictions on the test set
+
+Sample prediction 1       |  Sample prediction 2      | Sample prediction 3       |  
+--------------------------|---------------------------|---------------------------|
+![](docs/prediction1.jpg) | ![](docs/prediction2.jpg) | ![](docs/prediction3.jpg) |
+
+<p float="left">
+  <img src="./docs/prediction1.jpg" width="100" />
+  <img src="./docs/prediction1.jpg" width="100" /> 
+  <img src="./docs/prediction1.jpg" width="100" />
+</p>
+
+<img src="./docs/prediction1.jpg" width="425"/> <img src="./docs/prediction1.jpg" width="425"/> 
+
 ## For developers
 
 There is one additional container, based on the training container, with some dev tools installed.
-Currently, it is `Black` for formatting and `pytest` for testing.
+Currently, the tools are `Black` for formatting and `pytest` for testing.
 
 You have to build the container with:
 ```shell
