@@ -1,14 +1,14 @@
 # Pitch Geometry
 
 For a given image showing a fragment of a football pitch, output the position of visible keypoints. 
-The keypoints are labeled according to this map:
+The keypoints are labeled according to the map on the left and
+an exemplary image and its annotated keypoints are on the right:
 
-![keypoint-map](docs/pitch.png)
+<p float="left">
+  <img src="./docs/pitch.jpg" width="514" />
+  <img src="./docs/sample_keypoints.jpg" width="514" />
+</p>
 
-An example image and its annotated keypoints are shown below:
-![sample-image](docs/sample_keypoints.png)
-
-**Keywords**: computer vision, deep neural network, custom loss function, data augmentation.
 ## Installation
 
 My solution is containerized with Docker containers. There are containers for training, running inference and 
