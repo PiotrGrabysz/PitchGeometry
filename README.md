@@ -248,6 +248,9 @@ Below there are some examples of predictions on the test set
   <img src="./docs/prediction1.jpg" width="500" />
 </p>
 
+More detailed error analysis can be found in the notebook:
+[](notebooks/ErrorAnalysis.ipynb)
+
 ## For developers
 
 There is one additional container, based on the training container, with some dev tools installed.
