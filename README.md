@@ -1,12 +1,14 @@
 # Pitch Geometry
 
 For a given image showing a fragment of a football pitch, output the position of visible keypoints. 
-The keypoints are labeled according to the map on the left and
-an exemplary image and its annotated keypoints are on the right:
+The keypoints are labeled according to the map below:
+<p align="center">
+  <img src="./docs/pitch.png" width="514" />
+</p>
 
-<p float="left">
-  <img src="./docs/pitch.jpg" width="514" />
-  <img src="./docs/sample_keypoints.jpg" width="514" />
+An exemplary image and its annotated keypoints are shown here:
+<p align="center">
+  <img src="./docs/sample_keypoints.png" width="514" />
 </p>
 
 ## Installation
