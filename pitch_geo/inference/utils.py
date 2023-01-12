@@ -28,22 +28,6 @@ def keypoints_to_df(
     keypoints = keypoints.reshape(-1, 3)
 
     unique_keypoint_ids = [label for _, label in LABELS.items()]
-    # kid_list = list(
-    #     itertools.chain.from_iterable(
-    #         itertools.repeat(unique_keypoint_ids, number_of_images)
-    #     )
-    # )
-    image_path_list = list(
-        itertools.chain.from_iterable(
-            itertools.repeat(strip_datafolder_name(image_path), NUM_KEYPOINTS)
-            for image_path in images_paths
-        )
-    )
-
-    # print(f'DEBUG: {keypoints.shape=}')
-    # print(f'DEBUG: {len(kid_list)=}')
-    # print(f'DEBUG: {kid_list=}')
-    # print(f'DEBUG: {len(image_path_list)=}')
 
     df = pd.DataFrame(
         data={
