@@ -1,5 +1,8 @@
 # Pitch Geometry
 
+[![Python 3.8](https://img.shields.io/badge/python-3.8.10-blue.svg)](https://www.python.org/downloads/release/python-3810/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 For a given image showing a fragment of a football pitch, output the position of visible keypoints. 
 The keypoints are labeled according to the map below:
 <p align="center">
