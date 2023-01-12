@@ -87,9 +87,18 @@ def test_precision_metric(kps_true, kps_pred, precision):
 )
 def test_precision_metric2(kps_true, kps_pred, precision):
     m = metrics.VisiblePrecision()
-    m.update_state(np.expand_dims(kps_true[:, 0, :], axis=0), np.expand_dims(kps_pred[:, 0, :], axis=0))
-    m.update_state(np.expand_dims(kps_true[:, 1, :], axis=0), np.expand_dims(kps_pred[:, 1, :], axis=0))
-    m.update_state(np.expand_dims(kps_true[:, 2, :], axis=0), np.expand_dims(kps_pred[:, 2, :], axis=0))
+    m.update_state(
+        np.expand_dims(kps_true[:, 0, :], axis=0),
+        np.expand_dims(kps_pred[:, 0, :], axis=0),
+    )
+    m.update_state(
+        np.expand_dims(kps_true[:, 1, :], axis=0),
+        np.expand_dims(kps_pred[:, 1, :], axis=0),
+    )
+    m.update_state(
+        np.expand_dims(kps_true[:, 2, :], axis=0),
+        np.expand_dims(kps_pred[:, 2, :], axis=0),
+    )
     assert np.isclose(m.result().numpy(), precision)
 
 
