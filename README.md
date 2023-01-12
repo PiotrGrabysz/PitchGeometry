@@ -226,7 +226,7 @@ The confusion matrix shows visible vs invisible classification.
 
 ### Current results
 
-My current model achieves 0.00222MSE loss on visible keypoints.
+My current model achieves 0.00222 MSE loss on visible keypoints.
 
 Below there are some examples of predictions on the test set
 
