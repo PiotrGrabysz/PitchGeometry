@@ -8,4 +8,4 @@ docker run \
   --network host \
 	-v "$PWD":/workspace \
 	--rm \
-	$IMAGE_NAME # jupyter lab
+	$IMAGE_NAME
