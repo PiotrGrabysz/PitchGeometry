@@ -226,21 +226,18 @@ The confusion matrix shows visible vs invisible classification.
 
 ### Current results
 
-My current model achieves 0.00222 MSE loss on visible keypoints.
+My current model achieves 0.00222 MSE loss on visible keypoints. 
+Classification of points visibility yields 0.9886 precision and 0.9896 recall.
+
+[comment]: <> (The RMSE loss after rescalling is 57.954341317783104)
 
 Below there are some examples of predictions on the test set
 
-Sample prediction 1       |  Sample prediction 2      | Sample prediction 3       |  
---------------------------|---------------------------|---------------------------|
-![](docs/prediction1.jpg) | ![](docs/prediction2.jpg) | ![](docs/prediction3.jpg) |
-
 <p float="left">
-  <img src="./docs/prediction1.jpg" width="100" />
-  <img src="./docs/prediction1.jpg" width="100" /> 
-  <img src="./docs/prediction1.jpg" width="100" />
+  <img src="./docs/prediction1.jpg" width="500" />
+  <img src="./docs/prediction1.jpg" width="500" /> 
+  <img src="./docs/prediction1.jpg" width="500" />
 </p>
-
-<img src="./docs/prediction1.jpg" width="425"/> <img src="./docs/prediction1.jpg" width="425"/> 
 
 ## For developers
 
