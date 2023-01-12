@@ -35,6 +35,10 @@ The inference pipeline can be run with a command
 ```shell
 ./runners/infer.sh
 ```
+
+You can find my trained model in my Google Drive:
+[link_to_the_model](https://drive.google.com/drive/folders/1ef4IH2MVyDX1i05E-gn1q3Ir2vMIUXnA?usp=sharing)
+
 <details>
   <summary>Infer script usage</summary>
 
@@ -209,7 +213,9 @@ The backbone network is followed by a few convolutional layers - there is no den
 For one image the network's output is a tensor of shape `(number_of_keypoints, 3)`.
 The *xy* coordinates as well as visibility are all normalized to lie between 0 and 1.
 
-[comment]: <> (Add the network's graph visualization)
+The image below shows the model's graph:
+
+![](./docs/model_graph.png)
 
 #### Metrics
 
