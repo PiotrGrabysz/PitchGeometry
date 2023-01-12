@@ -9,7 +9,6 @@ import pandas as pd
 import tensorflow as tf
 
 from pitch_geo.constants import DATA_FOLDER
-from pitch_geo import data
 from pitch_geo.dataset.image_utils import load_image
 from pitch_geo.augmentation import Augmentation
 
@@ -44,7 +43,7 @@ class KeypointsDatasetBuilder(DatasetBuilder):
         self.augmentation = augmentation
 
     def build(self):
-        dataset = data.get_data_loader(df=self.data_frame, image_size=self.image_size)
+        dataset = get_data_loader(df=self.data_frame, image_size=self.image_size)
         if self.shuffle:
             dataset = dataset.shuffle(self.shuffle_buffer_size)
 
@@ -96,7 +95,6 @@ def get_data_loader(
     image_paths = df['image_path'].unique().tolist()
     # image_paths are expected to be relative to the DATA_FOLDER. Get the absolute paths
     absolute_paths = [str(DATA_FOLDER / p) for p in image_paths]
-    dataset_paths = tf.data.Dataset.from_tensor_slices(image_paths)
 
     images_dataset = get_image_loader(absolute_paths, image_size)
 

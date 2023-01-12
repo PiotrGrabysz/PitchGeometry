@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from pitch_geo import data
+from pitch_geo.dataset import tf_dataloaders
 from tests import sample_dataframes
 
 
@@ -24,7 +24,7 @@ def test_keypoints_to_dict():
         'kid': np.array([10, 11, 12])
     }
 
-    output_dict = data.keypoints_to_dict(df)
+    output_dict = tf_dataloaders.df_to_keypoints_dict(df)
 
     compare_annotations(annotations_true=expected_output, annotations_pred=output_dict)
 
@@ -55,7 +55,7 @@ def test_df_to_dict():
     }
     expected_result = OrderedDict(sorted(expected_result.items()))
 
-    output = data.df_to_dict(sample_dataframes.df1)
+    output = tf_dataloaders.df_to_keypoints_dict(sample_dataframes.df1)
     output = OrderedDict(sorted(output.items()))
 
     for (img_path1, annotations1), (img_path2, annotations2) in zip(expected_result.items(), output.items()):
