@@ -9,10 +9,10 @@ from pitch_geo.models.models import load_saved_model
 
 
 def infer(
-        model_name: Path = './best_model',
-        input_dir: Path = './data/images/test',
-        output_csv: Path = './outputs/output_keypoints.csv',
-        batch: int = 32
+    model_name: Path = "./best_model",
+    input_dir: Path = "./data/images/test",
+    output_csv: Path = "./outputs/output_keypoints.csv",
+    batch: int = 32,
 ):
     """
     Run inference on images from a given folder.
@@ -35,18 +35,22 @@ def infer(
 
     # Get the data loader
 
-    dataset_builder = ImageDatasetBuilder(input_dir, image_size=model_input_shape, batch_size=batch)
+    dataset_builder = ImageDatasetBuilder(
+        input_dir, image_size=model_input_shape, batch_size=batch
+    )
     dataset = dataset_builder.build()
 
     # Inference
     keypoints = model.predict(dataset)
 
     # Data Frame with keypoints annotations
-    df = utils.keypoints_to_df(keypoints, dataset_builder.images_paths, should_add_ghost_keypoints=True)
+    df = utils.keypoints_to_df(
+        keypoints, dataset_builder.images_paths, should_add_ghost_keypoints=True
+    )
 
     df.to_csv(output_csv, index=False)
-    print(f'Keypoints saved in {output_csv}')
+    print(f"Keypoints saved in {output_csv}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     typer.run(infer)

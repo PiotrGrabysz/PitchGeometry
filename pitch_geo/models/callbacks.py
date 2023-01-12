@@ -14,17 +14,21 @@ class LogConfusionMatrixCallback:
     def __init__(self, model, logdir, dataset, threshold=0.5):
         self.model = model
         self.logdir = logdir
-        self.file_writer_cm = tf.summary.create_file_writer(str(logdir / 'cm'))
+        self.file_writer_cm = tf.summary.create_file_writer(str(logdir / "cm"))
         self.dataset = dataset
-        self.class_names = ['not_visible', 'visible']
+        self.class_names = ["not_visible", "visible"]
         self.threshold = threshold
-        self.visibility = np.concatenate([
-            tf.reshape(tensor=is_visible_from_array(kps, self.threshold), shape=[-1])
-            for _, kps in iter(self.dataset)
-        ])
+        self.visibility = np.concatenate(
+            [
+                tf.reshape(
+                    tensor=is_visible_from_array(kps, self.threshold), shape=[-1]
+                )
+                for _, kps in iter(self.dataset)
+            ]
+        )
 
     def __call__(self, epoch, logs):
-        """ Log the confusion matrix. """
+        """Log the confusion matrix."""
 
         cm_image = self.calculate_cm()
 
@@ -35,7 +39,9 @@ class LogConfusionMatrixCallback:
     def calculate_cm(self):
         # Use the model to predict the values from the test_images.
         test_pred_raw = self.model.predict(self.dataset)
-        test_pred = is_visible_from_array(test_pred_raw, threshold=self.threshold).reshape(-1)
+        test_pred = is_visible_from_array(
+            test_pred_raw, threshold=self.threshold
+        ).reshape(-1)
 
         # Calculate the confusion matrix using sklearn.metrics
         cm = confusion_matrix(self.visibility, test_pred)
@@ -67,11 +73,11 @@ class LogPredictedImages:
     def __init__(self, model, logdir, dataset, labels, threshold=0.5, grid_size=4):
         self.model = model
         self.logdir = logdir
-        self.file_writer = tf.summary.create_file_writer(str(logdir / 'predictions'))
+        self.file_writer = tf.summary.create_file_writer(str(logdir / "predictions"))
         self.dataset = dataset
         self.threshold = threshold
         self.grid_size = grid_size
-        self.n_images = self.grid_size ** 2
+        self.n_images = self.grid_size**2
         self.labels = labels
 
         # Prepare the data
@@ -81,7 +87,7 @@ class LogPredictedImages:
 
         # Take the first 25 items from the batch
         if self.batch_size >= self.n_images:
-            self.sample_images = self.sample_images[:self.n_images, :, :, :]
+            self.sample_images = self.sample_images[: self.n_images, :, :, :]
 
     def __call__(self, epoch, logs):
         fig = self.predict_and_plot()
@@ -101,7 +107,9 @@ class LogPredictedImages:
         figure, axes = plt.subplots(self.grid_size, self.grid_size, figsize=(10, 10))
 
         for i, (ax, img, kps) in enumerate(zip(axes.flatten(), images, keypoints)):
-            plot_image_with_annotations_on_ax(ax, img/255., kps, labels=self.labels, dot_radius=3, vis=True)
+            plot_image_with_annotations_on_ax(
+                ax, img / 255.0, kps, labels=self.labels, dot_radius=3, vis=True
+            )
             ax.grid(False)
             ax.set_xticklabels([])
             ax.set_yticklabels([])
@@ -111,7 +119,7 @@ class LogPredictedImages:
     def predict(self):
         keypoints_hat = self.model.predict(self.sample_images).reshape(-1, 34 * 3)
         if self.batch_size <= self.n_images:
-            keypoints_hat = keypoints_hat[:self.n_images, :]
+            keypoints_hat = keypoints_hat[: self.n_images, :]
         return keypoints_hat
 
 
@@ -124,7 +132,7 @@ def plot_to_image(figure):
     buf = io.BytesIO()
 
     # Use plt.savefig to save the plot to a PNG in memory.
-    plt.savefig(buf, format='png')
+    plt.savefig(buf, format="png")
 
     # Closing the figure prevents it from being displayed directly inside
     # the notebook.

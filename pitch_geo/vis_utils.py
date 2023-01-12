@@ -14,7 +14,12 @@ import numpy as np
 from pitch_geo.constants import DATA_FOLDER, GRAPHS_FOLDER
 
 
-def visualize_keypoints(image_path: Union[Path, str], df: pd.DataFrame, dot_radius: float = 20.0, images_base_path=DATA_FOLDER):
+def visualize_keypoints(
+    image_path: Union[Path, str],
+    df: pd.DataFrame,
+    dot_radius: float = 20.0,
+    images_base_path=DATA_FOLDER,
+):
     """
     Plot the image from the given filepath and its corresponding keypoints.
     Args:
@@ -36,15 +41,15 @@ def visualize_keypoints(image_path: Union[Path, str], df: pd.DataFrame, dot_radi
 
     # Draw the keypoints
 
-    keypoints = df[df['image_path'] == image_path]
+    keypoints = df[df["image_path"] == image_path]
 
     x_offset = 0.5 * dot_radius  # offset between keypoint and text
     y_offset = -0.5 * dot_radius
     for _, row in keypoints.iterrows():
-        x = row['x']
-        y = row['y']
-        vis = row['vis']
-        kid = row['kid']
+        x = row["x"]
+        y = row["y"]
+        vis = row["vis"]
+        kid = row["kid"]
 
         # If a keypoint is not visible, then its coordinates are zeroed out. Don't plot them
         if vis != 0:
@@ -52,32 +57,34 @@ def visualize_keypoints(image_path: Union[Path, str], df: pd.DataFrame, dot_radi
             ax.add_patch(circ)
             ax.text(x=x + x_offset, y=y + y_offset, s=kid)
 
-    plt.axis('off')
+    plt.axis("off")
 
 
 def show_image_with_annotations(
-        img: np.ndarray,
-        keypoints: np.ndarray,
-        labels,
-        dot_radius: float = 2.0,
-        normalized: bool = True,
-        vis: bool = False
+    img: np.ndarray,
+    keypoints: np.ndarray,
+    labels,
+    dot_radius: float = 2.0,
+    normalized: bool = True,
+    vis: bool = False,
 ):
 
     fig, ax = plt.subplots(1)
-    plot_image_with_annotations_on_ax(ax, img, keypoints, labels, dot_radius, normalized, vis)
-    plt.axis('off')
+    plot_image_with_annotations_on_ax(
+        ax, img, keypoints, labels, dot_radius, normalized, vis
+    )
+    plt.axis("off")
     plt.show()
 
 
 def plot_image_with_annotations_on_ax(
-        ax,
-        img: np.ndarray,
-        keypoints: np.ndarray,
-        labels,
-        dot_radius: float = 2.0,
-        normalized: bool = True,
-        vis: bool = False
+    ax,
+    img: np.ndarray,
+    keypoints: np.ndarray,
+    labels,
+    dot_radius: float = 2.0,
+    normalized: bool = True,
+    vis: bool = False,
 ):
     # Show the image
     ax.imshow(img)
@@ -99,10 +106,10 @@ def plot_image_with_annotations_on_ax(
         if vis:
             x, y, v = point
             if v > 0.1:
-                color = 'orange'
+                color = "orange"
                 circ = Circle(xy=(x, y), radius=dot_radius, color=color)
                 ax.add_patch(circ)
-                ax.text(x=x + x_offset, y=y + y_offset, s=f'{labels[kid]}')
+                ax.text(x=x + x_offset, y=y + y_offset, s=f"{labels[kid]}")
             # else:
             #     color = 'teal'
 
@@ -110,7 +117,7 @@ def plot_image_with_annotations_on_ax(
             x, y = point
             circ = Circle(xy=(x, y), radius=dot_radius)
             ax.add_patch(circ)
-            ax.text(x=x + x_offset, y=y + y_offset, s=f'{labels[kid]}')
+            ax.text(x=x + x_offset, y=y + y_offset, s=f"{labels[kid]}")
 
 
 def show_field_with_keypoint_frequency(df, max_dot_size=1000):
@@ -154,12 +161,12 @@ def show_field_with_keypoint_frequency(df, max_dot_size=1000):
 
     fig, ax = plt.subplots(1, 2, figsize=(16, 16))
 
-    pitch_img = image.imread(GRAPHS_FOLDER / 'pitch.png')
+    pitch_img = image.imread(GRAPHS_FOLDER / "pitch.png")
     ax[0].imshow(pitch_img)
     ax[1].imshow(pitch_img)
 
-    keypoint_counts = df[df['vis'] != 0]['kid'].value_counts()
-    n_of_images = df['image_path'].nunique()
+    keypoint_counts = df[df["vis"] != 0]["kid"].value_counts()
+    n_of_images = df["image_path"].nunique()
 
     for kid, count in keypoint_counts.items():
         freq = count / n_of_images
@@ -170,12 +177,12 @@ def show_field_with_keypoint_frequency(df, max_dot_size=1000):
         except KeyError:
             pass
         else:
-            ax[1].scatter(x, y, s=size, c='orange', alpha=0.8)
-            fontsize = 'medium' if freq > 0.3 else 'small'
-            ax[1].text(x, y, s=f'{freq:0.0%}', alpha=0.8, fontsize=fontsize)
+            ax[1].scatter(x, y, s=size, c="orange", alpha=0.8)
+            fontsize = "medium" if freq > 0.3 else "small"
+            ax[1].text(x, y, s=f"{freq:0.0%}", alpha=0.8, fontsize=fontsize)
 
-    ax[0].axis('off')
-    ax[1].axis('off')
-    ax[1].set_title('Location of each keypoint')
-    ax[1].set_title('# times a given keypoint is visible / # frames')
+    ax[0].axis("off")
+    ax[1].axis("off")
+    ax[1].set_title("Location of each keypoint")
+    ax[1].set_title("# times a given keypoint is visible / # frames")
     plt.show()

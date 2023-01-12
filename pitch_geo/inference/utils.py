@@ -5,7 +5,9 @@ import pandas as pd
 from pitch_geo.constants import DATA_FOLDER, LABELS, NUM_KEYPOINTS
 
 
-def keypoints_to_df(keypoints, images_paths, should_add_ghost_keypoints: bool = False) -> pd.DataFrame:
+def keypoints_to_df(
+    keypoints, images_paths, should_add_ghost_keypoints: bool = False
+) -> pd.DataFrame:
     """
     Convert numpy array with keypoints into pandas data frame with format defined in the task specification.
 
@@ -33,7 +35,8 @@ def keypoints_to_df(keypoints, images_paths, should_add_ghost_keypoints: bool = 
     # )
     image_path_list = list(
         itertools.chain.from_iterable(
-            itertools.repeat(strip_datafolder_name(image_path), NUM_KEYPOINTS) for image_path in images_paths
+            itertools.repeat(strip_datafolder_name(image_path), NUM_KEYPOINTS)
+            for image_path in images_paths
         )
     )
 
@@ -42,19 +45,21 @@ def keypoints_to_df(keypoints, images_paths, should_add_ghost_keypoints: bool = 
     # print(f'DEBUG: {kid_list=}')
     # print(f'DEBUG: {len(image_path_list)=}')
 
-    df = pd.DataFrame(data={
-        'x': keypoints[:, 0],
-        'y': keypoints[:, 1],
-        'vis': keypoints[:, 2],
-        'kid': itertools.chain.from_iterable(
-            itertools.repeat(unique_keypoint_ids, number_of_images)
-        ),
-        'dataset': 'test',
-        'image_path': itertools.chain.from_iterable(
-            itertools.repeat(strip_datafolder_name(image_path), NUM_KEYPOINTS)
-            for image_path in images_paths
-        )
-    })
+    df = pd.DataFrame(
+        data={
+            "x": keypoints[:, 0],
+            "y": keypoints[:, 1],
+            "vis": keypoints[:, 2],
+            "kid": itertools.chain.from_iterable(
+                itertools.repeat(unique_keypoint_ids, number_of_images)
+            ),
+            "dataset": "test",
+            "image_path": itertools.chain.from_iterable(
+                itertools.repeat(strip_datafolder_name(image_path), NUM_KEYPOINTS)
+                for image_path in images_paths
+            ),
+        }
+    )
 
     df = rescale_xy(df)
     df = rename_visibility(df)
@@ -64,28 +69,28 @@ def keypoints_to_df(keypoints, images_paths, should_add_ghost_keypoints: bool = 
 
     df = zero_out_invisible_keypoints(df)
 
-    df = df.sort_values(by=['image_path', 'kid'])
+    df = df.sort_values(by=["image_path", "kid"])
 
     return df
 
 
 def rescale_xy(df, width: int = 1920, height: int = 1080):
-    """" Rescale xy back to original image dimension. """
-    df['x'] = round(df['x'] * width).astype('int64')
-    df['y'] = round(df['y'] * height).astype('int64')
+    """ " Rescale xy back to original image dimension."""
+    df["x"] = round(df["x"] * width).astype("int64")
+    df["y"] = round(df["y"] * height).astype("int64")
     return df
 
 
 def rename_visibility(df, threshold=0.5):
-    """ Remap visibility back to original 0 and 2. """
-    df['vis'] = df['vis'].apply(lambda x: 2 if x >= threshold else 0)
+    """Remap visibility back to original 0 and 2."""
+    df["vis"] = df["vis"].apply(lambda x: 2 if x >= threshold else 0)
     return df
 
 
 def zero_out_invisible_keypoints(df: pd.DataFrame) -> pd.DataFrame:
-    """ There is a convention that invisible keypoints (visibility 0) has their xy coordinates zeroed out. """
-    df.loc[df['vis'] == 0, 'x'] = 0.0
-    df.loc[df['vis'] == 0, 'y'] = 0.0
+    """There is a convention that invisible keypoints (visibility 0) has their xy coordinates zeroed out."""
+    df.loc[df["vis"] == 0, "x"] = 0.0
+    df.loc[df["vis"] == 0, "y"] = 0.0
     return df
 
 
@@ -96,8 +101,8 @@ def add_ghost_keypoints(df: pd.DataFrame) -> pd.DataFrame:
     keypoints to the final data frame frame, with their corresponding x, y and vis equal to 0.
     """
     ghost_keypoints = pd.concat(
-        (get_remaining_keypoints(img_path) for img_path in df['image_path'].unique()),
-        ignore_index=True
+        (get_remaining_keypoints(img_path) for img_path in df["image_path"].unique()),
+        ignore_index=True,
     )
     df = pd.concat([df, ghost_keypoints], ignore_index=True)
     return df
@@ -105,17 +110,19 @@ def add_ghost_keypoints(df: pd.DataFrame) -> pd.DataFrame:
 
 def strip_datafolder_name(path: str):
     if str(DATA_FOLDER) in path:
-        return path[len(str(DATA_FOLDER)) + 1:]
+        return path[len(str(DATA_FOLDER)) + 1 :]
     return path
 
 
 def get_remaining_keypoints(img_path):
-    df_tmp = pd.DataFrame({
-        'x': 0,
-        'y': 0,
-        'vis': 0,
-        'kid': [24, 30, 36, 37, 38],
-        'dataset': 'test',
-        'image_path': img_path
-    })
+    df_tmp = pd.DataFrame(
+        {
+            "x": 0,
+            "y": 0,
+            "vis": 0,
+            "kid": [24, 30, 36, 37, 38],
+            "dataset": "test",
+            "image_path": img_path,
+        }
+    )
     return df_tmp

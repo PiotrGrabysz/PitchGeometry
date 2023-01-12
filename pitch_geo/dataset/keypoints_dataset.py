@@ -25,7 +25,10 @@ class KeypointDataset:
     """
 
     def __init__(
-            self, dataset: Literal['train', 'test'], keypoints_data_path: Path, images_base_dir: Path
+        self,
+        dataset: Literal["train", "test"],
+        keypoints_data_path: Path,
+        images_base_dir: Path,
     ):
         self.dataset = dataset
         self._keypoints_data_path = keypoints_data_path
@@ -42,14 +45,13 @@ class KeypointDataset:
 
     @property
     def num_keypoints(self):
-        return self._df['kid'].nunique()
+        return self._df["kid"].nunique()
 
     @property
     def label_map(self):
-        keypoint_ids = sorted(self._df['kid'].unique())
+        keypoint_ids = sorted(self._df["kid"].unique())
         return {
-            key: value
-            for key, value in zip(range(len(keypoint_ids)), keypoint_ids)
+            key: value for key, value in zip(range(len(keypoint_ids)), keypoint_ids)
         }
 
     def split(self, test_size: float = 0.15) -> Tuple[pd.DataFrame, pd.DataFrame]:
@@ -60,41 +62,38 @@ class KeypointDataset:
             test_size: A fraction of all images that goes into the validation set.
 
         """
-        unique_images_paths = self._df['image_path'].unique()
+        unique_images_paths = self._df["image_path"].unique()
         train_paths, val_paths = train_test_split(
-            unique_images_paths,
-            test_size=test_size,
-            random_state=42,
-            shuffle=True
+            unique_images_paths, test_size=test_size, random_state=42, shuffle=True
         )
-        train_df = self._df[self._df['image_path'].isin(train_paths)]
-        val_df = self._df[self._df['image_path'].isin(val_paths)]
+        train_df = self._df[self._df["image_path"].isin(train_paths)]
+        val_df = self._df[self._df["image_path"].isin(val_paths)]
         return train_df, val_df
 
     def __repr__(self):
         return (
-            f'KeypointDataset(dataset={self.dataset}, keypoints_data_path={self._keypoints_data_path}, '
-            f'images_base_dir={self._images_base_dir})'
+            f"KeypointDataset(dataset={self.dataset}, keypoints_data_path={self._keypoints_data_path}, "
+            f"images_base_dir={self._images_base_dir})"
         )
 
     def _preprocess_data(self, df: pd.DataFrame):
-        if self.dataset == 'test':
+        if self.dataset == "test":
             return df
 
         # Change visibility 2 to visibility 1
-        df['vis'].replace(to_replace=2, value=1, inplace=True)
+        df["vis"].replace(to_replace=2, value=1, inplace=True)
 
         df = _keypoints_preprocessing_utils.correct_mislabeled_examples(df)
         df = _keypoints_preprocessing_utils.drop_empty_images(df)
         df = _keypoints_preprocessing_utils.drop_ghost_keypoints(df)
         df = _keypoints_preprocessing_utils.normalize_coordinates(df)
 
-        df.sort_values(by=['image_path', 'kid'], inplace=True)
+        df.sort_values(by=["image_path", "kid"], inplace=True)
 
         return df
 
 
-def get_data(dataset: Literal['train', 'test']) -> KeypointDataset:
+def get_data(dataset: Literal["train", "test"]) -> KeypointDataset:
     return KeypointDataset(
         dataset=dataset,
         keypoints_data_path=constants.KEYPOINTS_PATH,

@@ -12,7 +12,8 @@ class VisiblePrecision(tf.keras.metrics.Precision):
     Class implementing a custom metric for measuring precision of detecting visible keypoints versus not visible
     keypoints.
     """
-    def __init__(self, name: str = 'visible_precision', threshold: float = 0.5):
+
+    def __init__(self, name: str = "visible_precision", threshold: float = 0.5):
         """
         Constructor method for VisiblePrecision class.
 
@@ -34,7 +35,9 @@ class VisiblePrecision(tf.keras.metrics.Precision):
         visible_true = is_visible_from_array(y_true, self.threshold)
         visible_pred = is_visible_from_array(y_pred, self.threshold)
 
-        return super().update_state(y_true=visible_true, y_pred=visible_pred, *args, **kwargs)
+        return super().update_state(
+            y_true=visible_true, y_pred=visible_pred, *args, **kwargs
+        )
 
 
 class VisibleRecall(tf.keras.metrics.Recall):
@@ -42,7 +45,8 @@ class VisibleRecall(tf.keras.metrics.Recall):
     Class implementing a custom metric for measuring recall of detecting visible keypoints versus not visible
     keypoints.
     """
-    def __init__(self, name: str = 'visible_recall', threshold: float = 0.5):
+
+    def __init__(self, name: str = "visible_recall", threshold: float = 0.5):
         """
         Constructor method for VisibleRecall class.
 
@@ -64,12 +68,15 @@ class VisibleRecall(tf.keras.metrics.Recall):
         visible_true = is_visible_from_array(y_true, self.threshold)
         visible_pred = is_visible_from_array(y_pred, self.threshold)
 
-        return super().update_state(y_true=visible_true, y_pred=visible_pred, *args, **kwargs)
+        return super().update_state(
+            y_true=visible_true, y_pred=visible_pred, *args, **kwargs
+        )
 
 
 class XYMeanSquaredError(tf.keras.losses.MeanSquaredError):
-    """ Calculates mean squared error loss only for x, y coordinates of the keypoint. """
-    def __init__(self, n_keypoints: int, name: str = 'xy_loss'):
+    """Calculates mean squared error loss only for x, y coordinates of the keypoint."""
+
+    def __init__(self, n_keypoints: int, name: str = "xy_loss"):
         super().__init__(name=name)
         self.n_keypoints = n_keypoints
 
