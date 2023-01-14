@@ -126,10 +126,9 @@ There is also a .csv file given, which contains the keypoint data. It has the fo
 
 * `vis`: tells if the particular keypoint is visible on the image. 
   
-* `kid` is the keypoint id, selected accordingly to the 
-[keypoints map](keypoint-map). 
+* `kid` is the keypoint id, selected accordingly to the keypoint map presented at the top of this document. 
   
-* `dataset`: can be either "train" or "test"
+* `dataset`: can be either "train" or "test".
 
 * `image_path`: a relative path to the corresponding image file.
 
@@ -247,8 +246,8 @@ Below there are some examples of predictions on the test set
 
 <p float="left">
   <img src="./docs/prediction1.jpg" width="500" />
-  <img src="./docs/prediction1.jpg" width="500" /> 
-  <img src="./docs/prediction1.jpg" width="500" />
+  <img src="./docs/prediction2.jpg" width="500" /> 
+  <img src="./docs/prediction3.jpg" width="500" />
 </p>
 
 More detailed error analysis can be found in the notebook:
